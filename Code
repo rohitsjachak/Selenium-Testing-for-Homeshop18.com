@@ -1,0 +1,391 @@
+
+package org.isu.project;
+
+import static org.junit.Assert.*;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import junit.framework.Assert;
+
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
+
+
+public class Main
+{
+	private WebDriver driver;
+	private static final String USERNAME = "rohitsjachak@gmail.com";
+	private static final String PASSWORD = "rotsy";
+	private static final String NEW_PASSWORD = "seleniumtesting01";
+	
+	@Before
+	public void setUp() throws Exception
+	{
+		driver = new FirefoxDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+	}
+	
+	@Test
+	public void testsignInOut() throws Exception
+	{
+		//Open URL
+		driver.get("http://www.homeshop18.com/");
+		Thread.sleep(2000);
+		
+		//Sign in
+		driver.findElement(By.id("signInHeaderLink")).click();
+		Thread.sleep(2000);
+		
+		//Login using credentials
+		driver.findElement(By.id("emailId")).sendKeys(USERNAME);
+		Thread.sleep(2000);
+		driver.findElement(By.id("existing_user_radio")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.id("password")).sendKeys(PASSWORD);
+		Thread.sleep(2000);
+		
+		//Click on Sign In
+		driver.findElement(By.id("signin")).click();
+		Thread.sleep(2000);
+		
+		WebElement errorMsg = driver.findElement(By.className("icon_error_message"));
+		Assert.assertEquals(errorMsg.getText(),"");
+		
+		if(driver.findElement(By.className("icon_error_message")).isDisplayed())
+		{
+			driver.findElement(By.id("password")).sendKeys(NEW_PASSWORD);
+			Thread.sleep(2000);
+		}
+		
+		//Click on Sign In
+		driver.findElement(By.id("signin")).click();
+		Thread.sleep(2000);
+		
+		//Check assert true for sign in
+		WebElement loggedInUser = driver.findElement(By.xpath("//*[@id='header']/div[1]/div/ul/li[5]"));
+		Assert.assertEquals(loggedInUser.getText(),"HELLO ROHIT");
+		
+		//Signout
+		driver.findElement(By.xpath("//*[@id='signOutHeaderLink']")).click();
+		Thread.sleep(2000);
+		
+	}
+	
+	@Test
+	public void testsearchanddeleteProducts() throws Exception	
+	{
+		//Open URL
+		driver.get("http://www.homeshop18.com/");
+		Thread.sleep(2000);
+						
+		//Sign in
+		driver.findElement(By.id("signInHeaderLink")).click();
+		Thread.sleep(2000);
+						
+		//Login using credentials
+		driver.findElement(By.id("emailId")).sendKeys(USERNAME);
+		Thread.sleep(2000);
+		driver.findElement(By.id("existing_user_radio")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.id("password")).sendKeys(NEW_PASSWORD);
+		Thread.sleep(2000);
+						
+		//Click on Sign In
+		driver.findElement(By.id("signin")).click();
+		Thread.sleep(2000);
+		
+		
+		//Find the text input element by its name
+		WebElement element = driver.findElement(By.name("q"));
+		element.sendKeys("samsung");
+		Thread.sleep(2000);
+		
+		//Search products related to the name entered 
+		driver.findElement(By.id("searchgobutton")).click();
+		Thread.sleep(2000);
+		
+		//Select one category of products
+		driver.findElement(By.xpath("//*[@id='searchSuggestionsInMultiCategorySearchPage']/div[2]/ul/li[5]/p/a/img")).click();
+		Thread.sleep(2000);
+		
+		//Actions class declaration
+		Actions action = new Actions(driver);
+		
+		//Search items in the specified price range
+		WebElement slider1 = driver.findElement(By.id("slider-range"));
+		action.dragAndDropBy(slider1, 0, 0).perform();
+		Thread.sleep(3000);
+		
+		//Select one product
+		driver.findElement(By.xpath("//*[@id='pdiv_30451632']/p[1]/a/img")).click();
+		Thread.sleep(2000);
+		
+		//Buy product
+		driver.findElement(By.id("btnBuyNow")).click();
+		Thread.sleep(2000);
+		
+		//Remove product from cart
+		driver.findElement(By.xpath("//a[@id='removeFromCart_1']")).click();
+		Thread.sleep(2000);
+		
+		//Check assert true for empty cart
+		WebElement deleteItem = driver.findElement(By.xpath("html/body/div[2]/div[2]/div/div[2]/div/div/div[2]/div[1]/h2"));
+		Assert.assertEquals(deleteItem.getText(),"Rohit, you have no items in your cart");
+	}
+	
+	@Test
+	public void testaddProducts() throws Exception	
+	{	
+		//Open URL
+		driver.get("http://www.homeshop18.com/");
+		Thread.sleep(2000);
+				
+		//Sign in
+		driver.findElement(By.id("signInHeaderLink")).click();
+		Thread.sleep(2000);
+				
+		//Login using credentials
+		driver.findElement(By.id("emailId")).sendKeys(USERNAME);
+		Thread.sleep(2000);
+		driver.findElement(By.id("existing_user_radio")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.id("password")).sendKeys(NEW_PASSWORD);
+		Thread.sleep(2000);
+				
+		//Click on Sign In
+		driver.findElement(By.id("signin")).click();
+		Thread.sleep(2000);
+		
+		
+		//Buy 1st product
+		driver.findElement(By.xpath("//*[@id='logoSearch']/div[5]/ul/li[2]/a")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//*[@id='pdiv_31562583']/p[1]/a/img")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.id("btnBuyNow")).click();
+		Thread.sleep(2000);		
+		
+		//Check assert true for 1st product
+		assertTrue(driver.getPageSource().contains("Micromax Canvas MAd A94 Android Mobile Phone - Grey"));
+		
+		//Add more products
+		driver.findElement(By.xpath("//*[@id='addMoreProductsButton']")).click();
+		Thread.sleep(2000);
+		
+		//Buy 2nd product
+		driver.findElement(By.xpath("//*[@id='CategoryMenu5']/a")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//*[@id='3504']/a")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//*[@id='pdiv_32932411']/p[1]/a/img")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.id("btnBuyNow")).click();
+		Thread.sleep(2000);
+		
+		//Check assert true for 2nd product
+		assertTrue(driver.getPageSource().contains("Wonderchef Orange Shot Glass - 6 Pc Set"));
+
+		//Check assert true for total of both products
+		assertTrue(driver.getPageSource().contains("8730"));
+	    
+	}
+	
+	@Test
+	public void testReview() throws Exception
+	{
+		//Open URL
+		driver.get("http://www.homeshop18.com/");
+		Thread.sleep(2000);
+			
+		//Sign in
+		driver.findElement(By.id("signInHeaderLink")).click();
+		Thread.sleep(2000);
+				
+		//enter login credentials
+		driver.findElement(By.id("emailId")).sendKeys(USERNAME);
+		Thread.sleep(2000);
+		driver.findElement(By.id("existing_user_radio")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.id("password")).sendKeys(NEW_PASSWORD);
+		Thread.sleep(2000);
+								
+						
+		//Click on Sign In
+		driver.findElement(By.id("signin")).click();
+		Thread.sleep(2000);
+				
+		//Select a product category
+		driver.findElement(By.linkText("Micromax")).click();
+		Thread.sleep(2000);
+				
+		//Select a product
+		driver.findElement(By.xpath("//*[@id='pdiv_31800171']/p[3]/a/img")).click();
+		Thread.sleep(2000);
+				
+		//click on write review
+		driver.findElement(By.xpath("//a[@id='writeReviewPDP']")).click();
+		Thread.sleep(2000);
+				
+		// Rate the product
+		driver.findElement(By.linkText("1")).click();
+		driver.findElement(By.linkText("2")).click();
+		driver.findElement(By.linkText("3")).click();
+				
+		// Provide review
+		driver.findElement(By.xpath("//input[@id='reviewTitle']")).sendKeys("Review about Micromax Canvas Turbo A250 Dual SIM Android Mobile Phone");
+		driver.findElement(By.xpath("//*[@id='feedback']")).sendKeys("This mobile is excellent. The speed of the processor is really good in this segment of mobile phones. The overall design of the phone is attractive and the camera is really good. I would recommend people to take this phone if they are looking for a low range phone with good camera and good design.");
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//*[@id='prosInput']")).sendKeys("User-friendly");
+		driver.findElement(By.xpath("//*[@id='prosGrid']/div[2]/button")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//*[@id='consInput']")).sendKeys("Poor battery backup");
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//*[@id='consGrid']/div[2]/button")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//*[@id='submit']")).click();
+				
+		//Check assert true for successful review submission
+		WebElement deleteItem = driver.findElement(By.xpath("html/body/div[1]/div[2]/div/div[1]/div"));
+		Assert.assertEquals(deleteItem.getText(),"Thank you for submitting your review on the product");
+	}
+
+	@Test
+	public void testeditProfile() throws Exception
+	{
+		
+		//Open URL
+		driver.get("http://www.homeshop18.com/");
+		Thread.sleep(2000);
+								
+		//Sign in
+		driver.findElement(By.id("signInHeaderLink")).click();
+		Thread.sleep(2000);
+								
+		//Login using credentials
+		driver.findElement(By.id("emailId")).sendKeys(USERNAME);
+		Thread.sleep(2000);
+		driver.findElement(By.id("existing_user_radio")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.id("password")).sendKeys(PASSWORD);
+		Thread.sleep(2000);
+								
+		//Click on Sign In
+		driver.findElement(By.id("signin")).click();
+		Thread.sleep(2000);
+
+		
+		//Go to My Account
+		driver.findElement(By.id("myAccountHeaderLink")).click();
+		driver.findElement(By.xpath("//*[@id='myAccountNavigationLink']/span")).click();
+	    driver.findElement(By.id("myAccountNavigationUploadOrEditLink")).click();
+	    Thread.sleep(2000);
+	    
+	    //select profile pic
+		driver.findElement(By.id("file")).sendKeys("H:\\profile_pic.jpg");
+		Thread.sleep(2000);
+		
+		//click upload button
+		driver.findElement(By.xpath("//*[@id='userImageUpload']/fieldset/div/div[2]/div[2]/div[2]/button")).click();
+		Thread.sleep(2000);
+		
+		//Check assert true for upload picture
+	    WebElement uploadPicture = driver.findElement(By.xpath("html/body/div[1]/div[2]/div/ul/li/h5"));
+	    Assert.assertEquals(uploadPicture.getText(),"Selected profile image uploaded successfully");
+		
+	    
+	    //Update user details
+	    
+		//Go to My Account
+		driver.findElement(By.id("myAccountHeaderLink")).click();
+		
+		driver.findElement(By.xpath("html/body/div[1]/div[2]/div/div[2]/div[1]/div[1]/div/a/strong")).click();
+		Thread.sleep(3000);
+		
+		//Edit personal details
+		Select dropdown = new Select(driver.findElement(By.id("title")));   
+		dropdown.selectByVisibleText("Mr.");
+		Thread.sleep(2000);
+		
+		driver.findElement(By.id("firstName")).clear();
+		driver.findElement(By.id("firstName")).sendKeys("Rohit");
+		Thread.sleep(1000);
+		
+		driver.findElement(By.id("lastName")).clear();
+		driver.findElement(By.id("lastName")).sendKeys("Jachak");
+		Thread.sleep(1000);
+		
+		Select droplist = new Select(driver.findElement(By.id("gender")));   
+		droplist.selectByVisibleText("Male");
+		Thread.sleep(2000);
+		
+		Select drop = new Select(driver.findElement(By.id("dobDay")));   
+		drop.selectByValue("04");
+		Thread.sleep(2000);
+		
+		Select dropping = new Select(driver.findElement(By.id("dobMonth")));   
+		dropping.selectByValue("01");
+		Thread.sleep(2000);
+		
+		Select droppable = new Select(driver.findElement(By.id("dobYear")));   
+		droppable.selectByValue("1991");
+		Thread.sleep(2000);
+		
+		//Save changes
+		driver.findElement(By.xpath("//*[@id='editMyProfile']/div[3]/div[2]/ul/li[1]/a")).click();
+		Thread.sleep(3000);
+		
+		//Check assert true for update profile
+	    WebElement updateProfile = driver.findElement(By.xpath("html/body/div[1]/div[2]/div/ul[1]/li/h5"));
+	    Assert.assertEquals(updateProfile.getText(),"Personal Details saved successfully");
+	    
+	    
+	    
+	    //Change Password
+	    
+	    //Go to My Account
+	    driver.findElement(By.xpath("//*[@id='myAccountNavigationLink']/span")).click();
+	    Thread.sleep(2000);
+	  		
+	    //Select Change Password from Drop Down
+	    driver.findElement(By.id("myAccountNavigationChangePasswordLink")).click();
+	    Thread.sleep(2000);
+	    
+	    //Enter old password
+	    driver.findElement(By.id("oldPassword")).sendKeys(PASSWORD);
+	    Thread.sleep(2000);
+	    
+	    //Enter new password
+	    driver.findElement(By.id("newPassword")).sendKeys(NEW_PASSWORD);
+	    Thread.sleep(2000);
+	    
+	    //Re-enter password
+	    driver.findElement(By.id("confirmPassword")).sendKeys(NEW_PASSWORD);
+	    Thread.sleep(2000);
+	    
+	    //Click on Change Password
+	    driver.findElement(By.xpath("//*[@id='changePasswordForm']/div/div[4]/a")).click();
+	    Thread.sleep(3000);
+	  	    
+	    //Check assert true for change password
+	    WebElement changePassword = driver.findElement(By.className("icon_success_message"));
+	    Assert.assertEquals(changePassword.getText(),"");
+	}
+	
+	@After
+	public void tearDown() throws Exception
+	{
+		driver.quit();
+	}
+}
